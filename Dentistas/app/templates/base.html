@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <!-- Image and text -->
+<nav class="navbar">
+    <a class="navbar-brand" href="#">
+      <img src="https://mdbootstrap.com/img/Mockups/Lightbox/Thumbnail/img%20(67).jpg" width="30" height="30" class="d-inline-block align-top" alt="">
+      Inicio
+    </a>
+      {% if title %}
+      <title>{{ title }} Dentistas Anonimos</title>
+      {% else %}
+      <title>Bienvenido a Dentistas Anonimos</title>
+      {% endif %}
+
+      <div >
+  Dentistas Anonimos:
+  <a href="{{ url_for('index') }}">Inicio</a>
+  {% if current_user.is_anonymous %}
+  <a href="{{ url_for('login') }}">Iniciar Sesion</a>
+  {% else %}
+  <a href="{{ url_for('user', username=current_user.username) }}">Perfil</a>
+  <a href="{{url_for('logout')}}">Cerrar Sesion</a>
+
+  {% if rol=='1' -%}
+    <a href="{{ url_for('agenda')}}">Agendar cita</a>
+  {% else -%}
+     <a href="{{ url_for('book')}}">Agendar cita</a>
+  {% endif %}
+  <a href="{{ url_for('miscitas')}}">Ver citas</a>
+  {% endif %}
+  <a href="{{ url_for('cancelaciones')}}">Cancelar cita</a>
+  <a href="{{ url_for('editar')}}">Modificar cita</a>
+</div>
+</nav>
+    </head>
+
+    <body>
+
+        <hr>
+        {% with messages = get_flashed_messages() %}
+     {% if messages %}
+     <ul>
+         {% for message in messages %}
+         <li>{{ message }}</li>
+         {% endfor %}
+     </ul>
+     {% endif %}
+     {% endwith %}
+        {% block content %}{% endblock %}
+    </body>
+
+</html>
