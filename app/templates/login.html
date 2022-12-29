@@ -1,0 +1,28 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="align text-primary">Iniciar Sesion</h1>
+    <form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="form-group form-control-lg">
+        {{ form.username.label }}
+        {{ form.username(class_="form-control", size=32) }}
+    </div>
+    <div class="form-group form-control-lg">
+        {{ form.password.label }}
+        {{ form.password(class_="form-control", size=32) }}
+    </div>
+    <div class="form-group form-check">
+        {{ form.remember_me(class_="form-control") }} {{ form.remember_me.label }}
+    </div>
+    <div class="form-group form-control-lg">
+    {{ form.submit(class_="form-control") }}
+    </div>
+</form>
+ <p>Nuevo usuario? <a href="{{ url_for('register') }}">Click para registrar!</a></p>
+ <p>
+         Olvidaste tu contraseña?
+         <a href="{{ url_for('reset_password_request') }}">Click to Reset It</a>
+     </p>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Modificar citas</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        {% from "_formhelpers.html" import render_field %}
+        <dl>
+                {{ render_field(form.ids) }}
+        </dl>
+        <dl>
+
+            {{ render_field(form.servicios) }}
+             <h3><span id="result">Precio:</span></h3>
+
+        </dl>
+
+        <dl>
+            {{ render_field(form.rooms) }}
+        </dl>
+
+        <dl>
+            {{ render_field(form.doctores) }}
+        </dl>
+
+            {{ form.date.label}}
+            {{ form.date(class="dtpick") }}
+            {% for error in form.date.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        <dl>
+            {{ render_field(form.startTime) }}
+        </dl>
+
+        {{ form.title.label}}
+        {{ form.title(size=32)}}
+
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}

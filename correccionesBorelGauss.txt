@@ -1,0 +1,9 @@
+*Los pacientes deben estar dados de alta con su nombre completo
+*El formulario no debe estar pegado a la izquierda
+* Selecciones servicio, la primera opcion debe ser "seleccione un servicio"
+*Etiqueta modificar precio en checkbox
+*Poder agendar citas con medias horas
+*buscar formulario de fecha y hora mas bonitos
+*Cambiar precio arreglar
+*Si no esta activado cambiar precio ocultar textbox
+*Si no se ha seleccionado servicio ocultar "Precio:"

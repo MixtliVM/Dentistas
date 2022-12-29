@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Historial de citas:</h1>
+<table border="1" cellpadding=3>
+    <tr>
+        <th>Servicio</th>
+        <th>Paciente</th>
+        <th>Doctor</th>
+        <th>Agendado Por</th>
+        <th>Consultorio</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Observaciones</th>
+        <th>Costo</th>
+
+    </tr>
+{% for meeting in meetings %}
+    <tr>
+
+        <td>{{ meeting.Servicio}}</td>
+        <td>{{ meeting.Paciente}}</td>
+        <td>{{ meeting.Doctor}}</td>
+        <td>{{ meeting.Agendadapor}}</td>
+        <td>{{ meeting.Consultorio}}</td>
+        <td>{{ meeting.Fecha}}</td>
+        <td>{{ meeting.Hora}}</td>
+        <td>{{ meeting.Observaciones }}</td>
+        <td>{{ meeting.Costo }}</td>
+
+    </tr>
+
+
+
+{% endfor %}
+</table>
+{% endblock %}
