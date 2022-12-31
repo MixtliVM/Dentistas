@@ -25,13 +25,17 @@
 
   {% if rol==1 -%}
     <a href="{{ url_for('agenda')}}">Agendar cita doctor</a>
+    <a href="{{ url_for('miscitas')}}">Ver citas</a>
+    <a href="{{ url_for('cancelaciones')}}">Cancelar cita</a>
+    <a href="{{ url_for('editar')}}">Modificar cita</a>
+    <a href="{{ url_for('pagos')}}">Gestionar pagos</a>
+
   {% else -%}
      <a href="{{ url_for('book')}}">Agendar cita cliente</a>
   {% endif %}
-  <a href="{{ url_for('miscitas')}}">Ver citas</a>
+
   {% endif %}
-  <a href="{{ url_for('cancelaciones')}}">Cancelar cita</a>
-  <a href="{{ url_for('editar')}}">Modificar cita</a>
+
 </div>
 </nav>
     </head>

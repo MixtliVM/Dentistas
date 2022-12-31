@@ -13,6 +13,10 @@
         <th>Hora</th>
         <th>Observaciones</th>
         <th>Costo</th>
+        <th>Estado</th>
+        <th>Pago</th>
+
+
 
     </tr>
 {% for meeting in meetings %}
@@ -27,6 +31,8 @@
         <td>{{ meeting.Hora}}</td>
         <td>{{ meeting.Observaciones }}</td>
         <td>{{ meeting.Costo }}</td>
+        <td>{{ meeting.Estado }}</td>
+        <td>{{ meeting.Estatuspago }}</td>
 
     </tr>
 

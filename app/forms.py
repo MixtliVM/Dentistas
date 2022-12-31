@@ -135,7 +135,11 @@ class BookmeetingFormDr(FlaskForm):
     edit_precio=BooleanField('Ajustar precio')
     precio_nuevo=StringField('Ingrese precio')
     submit=SubmitField('Agendar')
-    paciente=current_user
+
+    def validate_title(self,title):
+        meeting=Meeting.query.filter_by(title=self.title.data).first()
+        if meeting is not None: # username exist
+            raise ValidationError('Please use another meeting title.')
 
     def validate_date(self,date):
         if self.date.data<datetime.datetime.now().date():
@@ -164,5 +168,6 @@ class EditarForm(FlaskForm):
     startTime=SelectField('Seleccione hora)',coerce=int,choices=[(i,i) for i in range(9,19)])
     submit=SubmitField('Editar Cita')
 
-class EstadodePago(FlaskForm):
-    pagado=SubmitField('Marcar como pagado')
+class PagosForm(FlaskForm):
+    ids=SelectField('Elija la cita cuyo pago desea registrar',coerce=int,choices=MeetingChoiceIterable())
+    submit=SubmitField('Enviar')

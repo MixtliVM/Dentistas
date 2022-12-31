@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, jsonify
+from flask import render_template, flash, redirect, url_for, request, jsonify, abort
 from app import app
 from app.forms import LoginForm, EditProfileForm
 from flask_login import current_user, login_user, login_required
@@ -10,27 +10,47 @@ from app import db
 from app.forms import RegistrationForm
 from datetime import datetime, date
 from app.forms import EmptyForm
-from app.forms import BookmeetingForm, BookmeetingFormDr, CancelacionForm, EditarForm
+from app.forms import BookmeetingForm, BookmeetingFormDr, CancelacionForm, EditarForm, PagosForm
 from app.models import *
 
+#def check_role(roles):    # Declaración del decorador
+#    def decorator(func):
+#        @wraps(func)
+#        def wrapper(*args, **kwargs):
+#            for r in roles:
+#                is_role=Role.query.filter_by(code=r).first()
+#                #is_role = Role.query.get(Role.code == r)
+#            if is_role != None:
+#                is_user=UserInRole.query.filter_by(user_id=current_user.id).one_or_none()
+                    #is_user = UserInRole.get_or_none(UserInRole.role_id == is_role.id,
+                    #UserInRole.user_id == current_user.id)
+
+#                if is_user == None:
+#                    redirect(url_for('index'))
+#            return func(*args, **kwargs)
+#            abort(403)
+#        return wrapper
+#    return decorator
+
+
+
+#--------- CHECK ROLES ---------#
 def check_role(roles):    # Declaración del decorador
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             for r in roles:
-                is_role=Role.query.filter_by(code=r).one_or_none()
-                #is_role = Role.query.get(Role.code == r)
-            #if is_role != None:
-                is_user=UserInRole.query.filter_by(user_id=current_user.id)
-                    #is_user = UserInRole.get_or_none(UserInRole.role_id == is_role.id,
-                    #UserInRole.user_id == current_user.id)
-
-                if is_user != None:
-                    pass
-            return func(*args, **kwargs)
+                is_role = Role.query.filter_by(code = r).first()
+                if is_role != None:
+                    is_user = UserInRole.query.filter_by(role_id = is_role.id).all()
+                    usuariosadmitidos=User.query.filter_by(id=i.id).all()
+                    if current_user in usuariosadmitidos:
+                        return func(*args, **kwargs)
             abort(403)
         return wrapper
     return decorator
+
+
 
 
 
@@ -150,19 +170,67 @@ def book():
 
 
         db.session.commit()
-        flash('Booking success!')
+        flash('Cita agendada correctamente')
         return redirect(url_for('index'))
     return render_template('book.html',title='Book Meeting',form=form, rol=rol)
 
 
+
 @app.route('/agenda',methods=['GET','POST'])
 @login_required
-#@check_role(['dr'])
+
 def agenda():
     form=BookmeetingFormDr()
     rol=UserInRole.query.filter_by(user_id=current_user.id).first().role_id
-    print('estoyaqui')
-    if  request.method=='POST' and form.validate_on_submit():
+    if request.method == 'POST': #form.validate_on_submit():
+
+        # check time collision
+        meetingcollisions=Meeting.query.filter_by(date=datetime.combine(form.date.data,datetime.min.time())).filter_by(roomId=form.rooms.data).all()
+        print(len(meetingcollisions))
+        for meetingcollision in meetingcollisions:
+            # [a, b] overlaps with [x, y] iff b > x and a < y
+            if (form.startTime.data<meetingcollision.endTime and (form.startTime.data+form.duration.data)>meetingcollision.startTime):
+                flash(f'The time from {meetingcollision.startTime} to {meetingcollision.endTime} is already booked by {User.query.filter_by(id=meetingcollision.bookerId).first().username}.')
+                return redirect(url_for('agenda'))
+
+        # make booking
+        booker=current_user
+        paciente=current_user
+        #paciente=User.query.filter_by(id=form.paciente.data).first()
+        room=Room.query.filter_by(id=form.rooms.data).first()
+        doctor=User.query.filter_by(id=form.doctores.data).first()
+        servicio=Servicio.query.filter_by(id=form.servicios.data).first()
+        booleano=form.edit_precio.data
+        costo=servicio.servicioCosto
+        if booleano==True:
+            costo=form.precio_nuevo.data
+            return costo
+        endTime=form.startTime.data+1
+        #paciente=User.query.filter_by(id=form.pacientes.data).first()
+        #participants_user=current_user
+
+        meeting=Meeting(title=form.title.data,roomId=room.id,doctorId=doctor.id,pacienteId=paciente.id,servicioId=servicio.id,bookerId=booker.id,date=form.date.data,startTime=form.startTime.data,endTime=endTime, costo=costo)
+        db.session.add(meeting)
+        #print('dr'+ str(form.doctores.data), 'pte' + str(form.pacientes.data), 'bkr'+ str(booker))
+        # Add booking log
+        #log=CostLog(title=form.title.data,date=form.date.data,cost=cost*form.duration.data)
+        #db.session.add(log)
+
+        # Add participants records
+        db.session.commit()
+        flash('Cita agendada correctamente')
+        return redirect(url_for('index'))
+    return render_template('agenda.html',title='Angendar una cita',form=form, rol=rol)
+
+
+
+@app.route('/agenda2',methods=['GET','POST'])
+@login_required
+#@check_role([ 'dr' ])
+def agenda2():
+    form=BookmeetingFormDr()
+    rol=UserInRole.query.filter_by(user_id=current_user.id).first().role_id
+    if method == ['POST']: #form.validate_on_submit():
 
         # check time collision
         meetingcollisions=Meeting.query.filter_by(date=datetime.combine(form.date.data,datetime.min.time())).filter_by(roomId=form.rooms.data).all()
@@ -200,7 +268,22 @@ def agenda():
 
         flash('Cita agendada correctamente')
         return redirect(url_for('index'))
-    return render_template('agenda.html',title='Agendar Cita',form=form,rol=rol)
+    return render_template('agenda.html',title='Agendar Cita',form=form, rol=rol)
+
+
+
+#codigo jscript para ocultar precio nuevo
+# <script type=text/javascript>
+ #$(".cost-box").hide();
+ #$("#item").click(function() {
+#     if($(this).is(":checked")) {
+#         $(".cost-box").show();
+#     } else {
+#         $(".cost-box").hide();
+#     }
+ #});
+ #</script>
+
 
 #ajustar tabla uwu
 @app.route('/miscitas')
@@ -222,6 +305,8 @@ def miscitas():
         meetingreturn['Observaciones']=meeting.title
         meetingreturn['Costo']=f'$ {meeting.costo} '
         meetingreturn['Estatuspago']=meeting.estatuspago
+        meetingreturn['Estado']=meeting.estado
+
         meetingreturns.append(meetingreturn)
 
 
@@ -245,7 +330,7 @@ def cancelaciones():
             return redirect(url_for('cancelaciones'))
 
 
-            cancelacion=Meeting.query.filter_by(id=form.ids.data).update(estado='Cancelada')
+            meeting.estado='Cancelada'
             db.session.commit()
 
         flash(f'Cita {meeting.servicio} cancelada correctamente! ')
@@ -281,6 +366,31 @@ def editar():
         flash(f'Cita {meeting.servicio} con {User.query.filter_by(id=idpaciente).first()} Modificada correctamente! ')
         return redirect(url_for('index'))
     return render_template('editar.html',title='Modificar cita',form=form)
+
+
+
+@app.route('/pagos',methods=['GET','POST'])
+@login_required
+#@check_role('[dr]')
+def pagos():
+    rol=UserInRole.query.filter_by(user_id=current_user.id).first().role_id
+    if not current_user.is_authenticated:
+        flash('Es necesario iniciar sesion para cancelar citas')
+        return redirect(url_for('login'))
+
+    form=PagosForm()
+    if form.validate_on_submit():
+        meeting=Meeting.query.filter_by(id=form.ids.data).first()
+
+
+
+
+        pagos=meeting.estatuspago='Pagado'
+        db.session.commit()
+
+        flash(f'Cita {meeting.servicio} registrada como Pagada ')
+        return redirect(url_for('index'))
+    return render_template('pagos.html',title='Pagos citas',form=form, rol=rol)
 
 
 
