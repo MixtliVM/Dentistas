@@ -1,42 +1,51 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, DateField, SelectField, SelectMultipleField, widgets, BooleanField
+from flask import request
+from wtforms import StringField, DateTimeField, PasswordField, BooleanField, SubmitField, TextAreaField, DateField, SelectField, SelectMultipleField, widgets, BooleanField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length, InputRequired
 from app.models import User, Room, Meeting,  Servicio, UserInRole
-import datetime
+from datetime import datetime, date
 from flask_login import current_user
-
+from flask_babel import _, lazy_gettext as _l
 
 
 
 class LoginForm(FlaskForm):
-    username = StringField('Nombre de Usuario', validators=[DataRequired()])
+    username = StringField('Nombre de usuario', validators=[DataRequired()])
     password = PasswordField('Contraseña', validators=[DataRequired()])
     remember_me = BooleanField('Recordarme')
     submit = SubmitField('Iniciar Sesion')
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    username = StringField('Nombre de usuario', validators=[DataRequired()])
+    email = StringField('E-mail', validators=[DataRequired(), Email()])
+    password = PasswordField('Contraseña', validators=[DataRequired()])
     password2 = PasswordField(
-        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Register')
+        'Repite la contraseña', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Registrarme')
 
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user is not None:
-            raise ValidationError('Please use a different username.')
+            raise ValidationError('Por favor utiliza un nombre de usuario distinto.')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
-            raise ValidationError('Please use a different email address.')
+            raise ValidationError('Por favor utiliza una direccion de e-mail distinta.')
 
 
 class EditProfileForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
-    about_me = TextAreaField('About me', validators=[Length(min=0, max=140)])
-    submit = SubmitField('Submit')
+    about_me = TextAreaField('Acerca de mi',
+                             validators=[Length(min=0, max=140)])
+    first_name = TextAreaField('Nombre(s)',
+                             validators=[Length(min=0, max=30)])
+    first_last_name = TextAreaField('Primer apellido',
+                             validators=[Length(min=0, max=30)])
+    second_last_name = TextAreaField('Segundo apellido',
+                             validators=[Length(min=0, max=30)])
+    date_of_birth = DateField('Fecha de nacimiento', validators=[DataRequired()],format="%Y-%m-%d")
+    submit = SubmitField('Actualizar')
 
     def __init__(self, original_username, *args, **kwargs):
         super(EditProfileForm, self).__init__(*args, **kwargs)
@@ -46,22 +55,32 @@ class EditProfileForm(FlaskForm):
         if username.data != self.original_username:
             user = User.query.filter_by(username=self.username.data).first()
             if user is not None:
-                raise ValidationError('Please use a different username.')
+                raise ValidationError('Por favor utiliza un nombre de usuario distinto.')
+
 
 class EmptyForm(FlaskForm):
-    submit = SubmitField('Submit')
+    submit = SubmitField('Enviar')
+
+
+class PostForm(FlaskForm):
+    post = TextAreaField('Escribe algo', validators=[DataRequired()])
+    submit = SubmitField('Enviar')
 
 
 class ResetPasswordForm(FlaskForm):
-    password = PasswordField('Password', validators=[DataRequired()])
+    password = PasswordField('Contraseña', validators=[DataRequired()])
     password2 = PasswordField(
-        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Request Password Reset')
+        'Repite la contaseña', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Solicitar contraseña nueva')
+
+class ResetPasswordRequestForm(FlaskForm):
+    email = StringField('E-mail', validators=[DataRequired(), Email()])
+    submit = SubmitField('Solicitar contraseña nueva')
 
 class UserChoiceIterable(object):
     def __iter__(self):
         users=User.query.all()
-        choices=[(user.id,f'{user.username}') for user in users]
+        choices=[(user.id,'{user.username}') for user in users]
         choices=[choice for choice in choices if 'admin' not in choice[1]] # do not delete admin
         for choice in choices:
             yield choice
@@ -103,34 +122,34 @@ class BookmeetingForm(FlaskForm):
     title=StringField('Asunto de la consulta',validators=[DataRequired()])
     servicios=SelectField('Seleccione servicio',coerce=int,choices=ServicioChoiceIterable())
     rooms=SelectField('Seleccione',coerce=int,choices=RoomChoiceIterable())
-    doctores=SelectField('Seleccione doctor',coerce=int,choices=DoctorChoiceIterable())
+    doctores=SelectField('Seleccione dentista',coerce=int,choices=DoctorChoiceIterable())
 
     date=DateField("Fecha", validators=([InputRequired(), DataRequired()]))
-    startTime=SelectField('Choose starting time(in 24hr expression)',coerce=int,choices=[(i,i) for i in range(9,19)])
+    startTime=SelectField('Elige la hora de inicio (en formato de 24 hrs)',coerce=int,choices=[(i,i) for i in range(9,19)])
     #duration=SelectField('Choose duration of the meeting(in hours)',coerce=int,choices=[(i,i) for i in range(1,6)])
     participants_user=current_user
-    submit=SubmitField('Book')
+    submit=SubmitField('Agendar')
 
 
     def validate_title(self,title):
         meeting=Meeting.query.filter_by(title=self.title.data).first()
         if meeting is not None: # username exist
-            raise ValidationError('Please use another meeting title.')
+            raise ValidationError('Por favor utiliza un titulo de cita distinto.')
 
     def validate_date(self,date):
         if self.date.data<datetime.datetime.now().date():
-            raise ValidationError('Solo puede agendar a partir del dia de mañana')
+            raise ValidationError('Solo puede agendar a partir del dia de mañana.')
 
 
 class BookmeetingFormDr(FlaskForm):
     title=StringField('Asunto de la consulta',validators=[DataRequired()])
     servicios=SelectField('Seleccione servicio',coerce=int,choices=ServicioChoiceIterable())
     rooms=SelectField('Seleccione consultorio',coerce=int,choices=RoomChoiceIterable())
-    doctores=SelectField('Seleccione doctor',coerce=int,choices=DoctorChoiceIterable())
+    doctores=SelectField('Seleccione dentista',coerce=int,choices=DoctorChoiceIterable())
     pacientes=SelectField('Seleccione paciente',coerce=int,choices=PacienteChoiceIterable())
     date=DateField("Fecha", validators=([InputRequired(), DataRequired()]))
-    startTime=SelectField('Choose starting time(in 24hr expression)',coerce=int,choices=[(i,i) for i in range(9,19)])
-    duration=SelectField('Choose duration of the meeting(in hours)',coerce=int,choices=[(i,i) for i in range(1,6)])
+    startTime=SelectField('Elige la hora de inicio (en formato de 24 hrs)',coerce=int,choices=[(i,i) for i in range(9,19)])
+    duration=SelectField('Elige la duracion de la consulta (en horas)',coerce=int,choices=[(i,i) for i in range(1,6)])
     participants_user=current_user
     edit_precio=BooleanField('Ajustar precio')
     precio_nuevo=StringField('Ingrese precio')
@@ -139,11 +158,11 @@ class BookmeetingFormDr(FlaskForm):
     def validate_title(self,title):
         meeting=Meeting.query.filter_by(title=self.title.data).first()
         if meeting is not None: # username exist
-            raise ValidationError('Please use another meeting title.')
+            raise ValidationError('Por favor utiliza un titulo de cita distinto.')
 
     def validate_date(self,date):
         if self.date.data<datetime.datetime.now().date():
-            raise ValidationError('Solo puede agendar a partir del día de mañana')
+            raise ValidationError('Solo puede agendar a partir del día de mañana.')
 
 
 class MeetingChoiceIterable(object):
@@ -155,19 +174,19 @@ class MeetingChoiceIterable(object):
             yield choice
 
 class CancelacionForm(FlaskForm):
-    ids=SelectField('Elija la cita que desea cancelar',coerce=int,choices=MeetingChoiceIterable())
+    ids=SelectField('Elige la cita que deseas cancelar',coerce=int,choices=MeetingChoiceIterable())
     submit=SubmitField('Cancelar')
 
 class EditarForm(FlaskForm):
-    ids=SelectField('Elija la cita que desea modificar',coerce=int,choices=MeetingChoiceIterable())
+    ids=SelectField('Elige la cita que deseas modificar',coerce=int,choices=MeetingChoiceIterable())
     title=StringField('Asunto de la consulta',validators=[DataRequired()])
     servicios=SelectField('Seleccione servicio',coerce=int,choices=ServicioChoiceIterable())
     rooms=SelectField('Seleccione',coerce=int,choices=RoomChoiceIterable())
-    doctores=SelectField('Seleccione doctor',coerce=int,choices=DoctorChoiceIterable())
+    doctores=SelectField('Seleccione dentista',coerce=int,choices=DoctorChoiceIterable())
     date=DateField("Fecha", validators=([InputRequired(), DataRequired()]))
-    startTime=SelectField('Seleccione hora)',coerce=int,choices=[(i,i) for i in range(9,19)])
+    startTime=SelectField('Seleccione hora',coerce=int,choices=[(i,i) for i in range(9,19)])
     submit=SubmitField('Editar Cita')
 
 class PagosForm(FlaskForm):
-    ids=SelectField('Elija la cita cuyo pago desea registrar',coerce=int,choices=MeetingChoiceIterable())
+    ids=SelectField('Elige la cita cuyo pago deseas registrar',coerce=int,choices=MeetingChoiceIterable())
     submit=SubmitField('Enviar')

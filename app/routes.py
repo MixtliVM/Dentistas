@@ -3,15 +3,15 @@ from app import app
 from app.forms import LoginForm, EditProfileForm
 from flask_login import current_user, login_user, login_required
 from app.models import User, Meeting, Room
-from flask_login import logout_user
+from flask_login import logout_user, login_user, current_user
 from flask import request
 from werkzeug.urls import url_parse
 from app import db
-from app.forms import RegistrationForm
 from datetime import datetime, date
-from app.forms import EmptyForm
-from app.forms import BookmeetingForm, BookmeetingFormDr, CancelacionForm, EditarForm, PagosForm
+from app.forms import LoginForm, RegistrationForm, EmptyForm, BookmeetingForm, BookmeetingFormDr, CancelacionForm, EditarForm, PagosForm, \
+    ResetPasswordRequestForm, ResetPasswordForm
 from app.models import *
+from app.email2 import send_password_reset_email
 
 #def check_role(roles):    # Declaración del decorador
 #    def decorator(func):
@@ -70,7 +70,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
+            flash('Nombre de usuario o contraseña incorrectos.')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
@@ -97,10 +97,41 @@ def register():
         rol=UserInRole(user_id=user.id, role_id=2)
         db.session.add(rol)
         db.session.commit()
-        flash('Congratulations, you are now a registered user!')
+        flash('¡Felicidades, ya eres un usuario registrado!')
         return redirect(url_for('login'))
 
-    return render_template('register.html', title='Register', form=form)
+    return render_template('register.html', title='Registro', form=form)
+
+@bp.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            send_password_reset_email(user)
+        flash('Revisa tu e-mail para ver las instrucciones del cambio de contraseña')
+        return redirect(url_for('login'))
+    return render_template('reset_password_request.html',
+                           title='Cambiar contraseña', form=form)
+
+
+@bp.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    user = User.verify_reset_password_token(token)
+    if not user:
+        return redirect(url_for('index'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash('Tu contraseña ha sido cambiada')
+        return redirect(url_for('login'))
+    return render_template('reset_password.html', form=form)
+
 
 @app.route('/user/<username>')
 @login_required
@@ -126,7 +157,7 @@ def reset_password_request():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             send_password_reset_email(user)
-        flash('Check your email for the instructions to reset your password')
+        flash('Revisa tu e-mail para ver las instrucciones del cambio de contraseña')
         return redirect(url_for('login'))
     return render_template('reset_password_request.html',
                            title='Reset Password', form=form)
