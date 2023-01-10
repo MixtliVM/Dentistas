@@ -18,6 +18,34 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
+        <p>
+            {{ form.first_name.label }}<br>
+            {{ form.first_name(cols=50, rows=1) }}<br>
+            {% for error in form.first_name.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.first_last_name.label }}<br>
+            {{ form.first_last_name(cols=50, rows=1) }}<br>
+            {% for error in form.first_last_name.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.second_last_name.label }}<br>
+            {{ form.second_last_name(cols=50, rows=1) }}<br>
+            {% for error in form.second_last_name.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.date_of_birth.label }}<br>
+           {{ form.date_of_birth(type="date") }}
+            {% for error in form.date_of_birth.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
         <p>{{ form.submit() }}</p>
     </form>
 {% endblock %}

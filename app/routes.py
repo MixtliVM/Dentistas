@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request, jsonify, abort
 from app import app
-from app.forms import LoginForm, EditProfileForm
+from app.forms import LoginForm, EditProfileForm, PostForm
 from flask_login import current_user, login_user, login_required
 from app.models import User, Meeting, Room
 from flask_login import logout_user, login_user, current_user
@@ -12,6 +12,13 @@ from app.forms import LoginForm, RegistrationForm, EmptyForm, BookmeetingForm, B
     ResetPasswordRequestForm, ResetPasswordForm
 from app.models import *
 from app.email2 import send_password_reset_email
+
+
+@app.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.utcnow()
+        db.session.commit()
 
 #def check_role(roles):    # Declaración del decorador
 #    def decorator(func):
@@ -59,7 +66,24 @@ def check_role(roles):    # Declaración del decorador
 @login_required
 def index():
     rol=UserInRole.query.filter_by(user_id=current_user.id).first().role_id
-    return render_template('index.html', title='Inicio', rol=rol)
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(body=form.post.data, author=current_user)
+        db.session.add(post)
+        db.session.commit()
+        flash('¡Tu publicacion ha sido hecha!')
+        return redirect(url_for('index'))
+    page = request.args.get('page', 1, type=int)
+    posts = current_user.followed_posts().paginate(
+        page=page, per_page=current_app.config['POSTS_PER_PAGE'],
+        error_out=False)
+    next_url = url_for('index', page=posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('index', page=posts.prev_num) \
+        if posts.has_prev else None
+    return render_template('index.html', title='Inicio', form=form,
+                           posts=posts.items, next_url=next_url,
+                           prev_url=prev_url, rol=rol)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -102,7 +126,7 @@ def register():
 
     return render_template('register.html', title='Registro', form=form)
 
-@bp.route('/reset_password_request', methods=['GET', 'POST'])
+@app.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -117,7 +141,7 @@ def reset_password_request():
                            title='Cambiar contraseña', form=form)
 
 
-@bp.route('/reset_password/<token>', methods=['GET', 'POST'])
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -137,9 +161,42 @@ def reset_password(token):
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
+    page = request.args.get('page', 1, type=int)
+    posts = user.posts.order_by(Post.timestamp.desc()).paginate(
+        page=page, per_page=app.config['POSTS_PER_PAGE'],
+        error_out=False)
+    next_url = url_for('main.user', username=user.username,
+                       page=posts.next_num) if posts.has_next else None
+    prev_url = url_for('main.user', username=user.username,
+                       page=posts.prev_num) if posts.has_prev else None
+    form = EmptyForm()
     rol=UserInRole.query.filter_by(user_id=current_user.id).first().role_id
-    return render_template('user.html', user=user, rol=rol)
+    return render_template('user.html', user=user, posts=posts.items,
+                           next_url=next_url, prev_url=prev_url, form=form, rol=rol)
 
+@app.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = EditProfileForm(current_user.username)
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.about_me = form.about_me.data
+        current_user.first_name = form.first_name.data
+        current_user.first_last_name = form.first_last_name.data
+        current_user.second_last_name = form.second_last_name.data
+        current_user.date_of_birth = form.date_of_birth.data
+        db.session.commit()
+        flash('Tus cambios han sido guardados.')
+        return redirect(url_for('edit_profile'))
+    elif request.method == 'GET    g.locale = str(get_locale())':
+        form.username.data = current_user.username
+        form.about_me.data = current_user.about_me
+        form.first_name.data = current_user.first_name
+        form.first_last_name.data = current_user.first_last_name
+        form.second_last_name.data = current_user.second_last_name
+        form.date_of_birth.data = current_user.date_of_birth
+    return render_template('edit_profile.html', title='Editar mi perfil',
+                           form=form)
 
 @app.before_request
 def before_request():
@@ -147,20 +204,6 @@ def before_request():
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
 
-
-@app.route('/reset_password_request', methods=['GET', 'POST'])
-def reset_password_request():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    form = ResetPasswordRequestForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user:
-            send_password_reset_email(user)
-        flash('Revisa tu e-mail para ver las instrucciones del cambio de contraseña')
-        return redirect(url_for('login'))
-    return render_template('reset_password_request.html',
-                           title='Reset Password', form=form)
 
 @app.route('/book',methods=['GET','POST'])
 @login_required
@@ -251,14 +294,14 @@ def agenda():
         db.session.commit()
         flash('Cita agendada correctamente')
         return redirect(url_for('index'))
-    return render_template('agenda.html',title='Angendar una cita',form=form, rol=rol)
+    return render_template('agenda.html',title='Angendar una cita', form=form, rol=rol)
 
 
 
 @app.route('/agenda2',methods=['GET','POST'])
 @login_required
 #@check_role([ 'dr' ])
-def agenda2():
+def agenda2():    g.locale = str(get_locale())
     form=BookmeetingFormDr()
     rol=UserInRole.query.filter_by(user_id=current_user.id).first().role_id
     if method == ['POST']: #form.validate_on_submit():
@@ -267,7 +310,7 @@ def agenda2():
         meetingcollisions=Meeting.query.filter_by(date=datetime.combine(form.date.data,datetime.min.time())).filter_by(roomId=form.rooms.data).all()
         print(len(meetingcollisions))
         for meetingcollision in meetingcollisions:
-            # [a, b] overlaps with [x, y] iff b > x and a < y
+            # [a, b] overlaps with    g.locale = str(get_locale()) [x, y] iff b > x and a < y
             if (form.startTime.data<meetingcollision.endTime and (form.startTime.data+form.duration.data)>meetingcollision.startTime):
                 flash(f'The time from {meetingcollision.startTime} to {meetingcollision.endTime} is already booked by {User.query.filter_by(id=meetingcollision.bookerId).first().username}.')
                 return redirect(url_for('agenda'))
@@ -299,7 +342,7 @@ def agenda2():
 
         flash('Cita agendada correctamente')
         return redirect(url_for('index'))
-    return render_template('agenda.html',title='Agendar Cita',form=form, rol=rol)
+    return render_template('agenda.html',title='Agendar Cita', form=form, rol=rol)
 
 
 
@@ -389,7 +432,7 @@ def editar():
         meeting.servicio=Servicio.query.filter_by(id=form.servicios.data).first()
         idpaciente=meeting.pacienteId
         if meeting.date<=datetime.now():
-            flash(f'No es posible modificar citas pasadas')
+            flash(f'No es posible mod    g.locale = str(get_locale())ificar citas pasadas')
             return redirect(url_for('editar'))
 
         #modificacion=Meeting.query.update(title=form.title.data, roomId=form.rooms.data, doctorId=form.doctores.data, servicioId=form.servicios.data, date=form.date.data, startTime=form.startTime.data, endTime=endTime )
@@ -415,7 +458,7 @@ def pagos():
 
 
 
-
+    g.locale = str(get_locale())
         pagos=meeting.estatuspago='Pagado'
         db.session.commit()
 
@@ -436,7 +479,7 @@ def add_numbers():
 
 @app.route('/probardoctores',methods=['GET','POST'])
 @login_required
-def probdoctores():
+def probdoctores():    g.locale = str(get_locale())
 
     doctores=Doctor.query.filter_by(id=form.doctores.data).first()
     print(doctores)

@@ -1,12 +1,10 @@
 from datetime import datetime, date
-from app import db
+from app import db, login, app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, current_user
-from app import login
 from hashlib import md5
 from time import time
 import jwt
-from app import app
 from functools import wraps
 from sqlalchemy import Column, ForeignKey, Integer, Table, create_engine, String
 from sqlalchemy.orm import declarative_base, relationship, scoped_session, sessionmaker
@@ -59,7 +57,7 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         #rol=UserInRole.query.filter_by(user_id).first().role_id
         #codigo=Role.query.filter_by(id).first().code
-        return '<User {}>'.format(self.username)
+        return '{}'.format(self.username)
 
     def set_password(self,password):
         self.password_hash=generate_password_hash(password)
@@ -110,13 +108,11 @@ def load_user(id):
     return User.query.get(int(id))
 
 
-class Post(SearchableMixin, db.Model):
-    __searchable__ = ['body']
+class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    language = db.Column(db.String(5))
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)

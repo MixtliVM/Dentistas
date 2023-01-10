@@ -12,21 +12,21 @@
                 {% if user.first_last_name %}<p>Primer apellido: {{ user.first_last_name }}</p>{% endif %}
                 {% if user.second_last_name %}<p>Segundo apellido: {{ user.second_last_name }}</p>{% endif %}
                 {% if user.date_of_birth %} <p>Fecha de nacimiento: {{ user.date_of_birth }}</p>{% endif %}
-                <p>{{ %(count)d seguidores, count=user.followers.count()) }}, {{ %(count)d siguiendo, count=user.followed.count()) }}</p>
+                <p>{{ user.followers.count() }} followers, {{ user.followed.count() }} following.</p>
                 {% if user == current_user %}
-                <p><a href="{{ url_for('edit_profile') }}">Edita tu perfil</a></p>
+                <p><a href="{{ url_for('edit_profile') }}">Editar mi perfil</a></p>
                 {% elif not current_user.is_following(user) %}
                 <p>
                     <form action="{{ url_for('follow', username=user.username) }}" method="post">
                         {{ form.hidden_tag() }}
-                        {{ form.submit(value=Seguir }}
+                        {{ form.submit(value=_('Follow')) }}
                     </form>
                 </p>
                 {% else %}
                 <p>
                     <form action="{{ url_for('unfollow', username=user.username) }}" method="post">
                         {{ form.hidden_tag() }}
-                        {{ form.submit(value=Dejar de seguir }}
+                        {{ form.submit(value=_('Unfollow')) }}
                     </form>
                 </p>
                 {% endif %}

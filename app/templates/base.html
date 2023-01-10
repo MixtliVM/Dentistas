@@ -1,14 +1,56 @@
-<!DOCTYPE html><html data-wf-domain="microblog-fc6025.webflow.io" data-wf-page="638e6d969fffbf069b9ae163" data-wf-site="638e6d959fffbffb5a9ae14a"><head><meta charset="utf-8"/><title>Portfolio - Webflow HTML website template</title><meta content="Portfolio - Webflow HTML website template" property="og:title"/><meta content="https://uploads-ssl.webflow.com/63a4d23f6b5256fd5a5d9802/63a4fa54c8c1bd5b25f5d8fe_IMG_5974-p-1080.jpg" property="og:image"/><meta content="Portfolio - Webflow HTML website template" property="twitter:title"/><meta content="https://uploads-ssl.webflow.com/63a4d23f6b5256fd5a5d9802/63a4fa54c8c1bd5b25f5d8fe_IMG_5974-p-1080.jpg" property="twitter:image"/><meta content="width=device-width, initial-scale=1" name="viewport"/><meta content="Webflow" name="generator"/><link href="https://uploads-ssl.webflow.com/638e6d959fffbffb5a9ae14a/css/microblog-fc6025.webflow.c7c3e205c.css" rel="stylesheet" type="text/css"/><script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script><script type="text/javascript">WebFont.load({  google: {    families: ["Montserrat:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic"]  }});</script><!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" type="text/javascript"></script><![endif]--><script type="text/javascript">!function(o,c){var n=c.documentElement,t=" w-mod-";n.className+=t+"js",("ontouchstart"in o||o.DocumentTouch&&c instanceof DocumentTouch)&&(n.className+=t+"touch")}(window,document);</script><link href="https://uploads-ssl.webflow.com/img/favicon.ico" rel="shortcut icon" type="image/x-icon"/><link href="https://uploads-ssl.webflow.com/img/webclip.png" rel="apple-touch-icon"/></head><body><div data-collapse="medium" data-animation="default" data-duration="400" data-easing="ease" data-easing2="ease" role="banner" class="navigation w-nav"><div class="navigation-items"><a href="/" aria-current="page" class="logo-link w-nav-brand w--current"><img src="https://uploads-ssl.webflow.com/638e6d959fffbffb5a9ae14a/638e6d969fffbf56a49ae171_portfolio-logo%402x.png" width="104" alt="" class="logo-image"/></a><div class="navigation-wrap"><nav role="navigation" class="navigation-items w-nav-menu"><a href="/" class="navigation-item w-nav-link">Inicio</a>{% if current_user.is_anonymous %}
-<a href="{{ url_for('auth.login') }}">{{ _('Login') }}</a>{% else %}<a href="{{ url_for('main.user', username=current_user.username) }}" class="navigation-item w-nav-link">{{ _('Profile') }}</a><a href="/bookameeting" class="navigation-item w-nav-link">{{ _('Book a meeting') }}</a><a href="{{ url_for('auth.logout') }}" class="navigation-item w-nav-link">{{ _('Log out') }}</a>{% if rol==1 -%}
-  <a href="{{ url_for('agenda')}}">Agendar cita doctor</a>
-  <a href="{{ url_for('miscitas')}}">Ver citas</a>
-  <a href="{{ url_for('cancelaciones')}}">Cancelar cita</a>
-  <a href="{{ url_for('editar')}}">Modificar cita</a>
-  <a href="{{ url_for('pagos')}}">Gestionar pagos</a>
+<!DOCTYPE html>
 
-{% else -%}
-   <a href="{{ url_for('book')}}">Agendar cita cliente</a>
-{% endif %}</nav>{% endif %}<div class="menu-button w-nav-button"><img src="https://uploads-ssl.webflow.com/638e6d959fffbffb5a9ae14a/638e6d969fffbf09189ae170_menu-icon.png" width="22" alt="" class="menu-icon"/></div></div></div></div>{% with messages = get_flashed_messages() %}
+<html data-wf-domain="microblog-fc6025.webflow.io" data-wf-page="638e6d969fffbf069b9ae163" data-wf-site="638e6d959fffbffb5a9ae14a">
+
+<head>
+  <meta charset="utf-8"/>
+  <title>Dentistas Anonimos</title>
+  <meta content="Portfolio - Webflow HTML website template" property="og:title"/>
+  <meta content="https://uploads-ssl.webflow.com/63a4d23f6b5256fd5a5d9802/63a4fa54c8c1bd5b25f5d8fe_IMG_5974-p-1080.jpg" property="og:image"/>
+  <meta content="Portfolio - Webflow HTML website template" property="twitter:title"/>
+  <meta content="https://uploads-ssl.webflow.com/63a4d23f6b5256fd5a5d9802/63a4fa54c8c1bd5b25f5d8fe_IMG_5974-p-1080.jpg" property="twitter:image"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/><meta content="Webflow" name="generator"/>
+  <link href="https://uploads-ssl.webflow.com/638e6d959fffbffb5a9ae14a/css/microblog-fc6025.webflow.c7c3e205c.css" rel="stylesheet" type="text/css"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script>
+  <script type="text/javascript">WebFont.load({  google: {    families: ["Montserrat:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic"]  }});</script>
+  <!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" type="text/javascript"></script><![endif]-->
+  <script type="text/javascript">!function(o,c){var n=c.documentElement,t=" w-mod-";n.className+=t+"js",("ontouchstart"in o||o.DocumentTouch&&c instanceof DocumentTouch)&&(n.className+=t+"touch")}(window,document);</script>
+  <link href="https://uploads-ssl.webflow.com/img/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+  <link href="https://uploads-ssl.webflow.com/img/webclip.png" rel="apple-touch-icon"/>
+</head>
+
+<body>
+  <div data-collapse="medium" data-animation="default" data-duration="400" data-easing="ease" data-easing2="ease" role="banner" class="navigation w-nav">
+    <div class="navigation-items">
+      <a href="/" aria-current="page" class="logo-link w-nav-brand w--current">
+        <img src="https://uploads-ssl.webflow.com/638e6d959fffbffb5a9ae14a/638e6d969fffbf56a49ae171_portfolio-logo%402x.png" width="104" alt="" class="logo-image"/></a>
+        <div class="navigation-wrap">
+          <nav role="navigation" class="navigation-items w-nav-menu">
+            <a href="{{ url_for('index') }}" class="navigation-item w-nav-link">Inicio</a>
+            {% if current_user.is_anonymous %}
+            <a href="{{ url_for('login') }}">Iniciar Sesion</a>
+            {% else %}
+            <a href="{{ url_for('user', username=current_user.username) }}" class="navigation-item w-nav-link">Mi perfil</a>
+            <a href="{{ url_for('logout') }}" class="navigation-item w-nav-link">Cerrar sesion</a>
+            {% if rol==1 -%}
+            <a href="{{ url_for('agenda') }}" class="navigation-item w-nav-link">Agendar cita doctor</a>
+            <a href="{{ url_for('miscitas') }}" class="navigation-item w-nav-link">Ver citas</a>
+            <a href="{{ url_for('cancelaciones') }}" class="navigation-item w-nav-link">Cancelar cita</a>
+            <a href="{{ url_for('editar') }}" class="navigation-item w-nav-link">Modificar cita</a>
+            <a href="{{ url_for('pagos') }}" class="navigation-item w-nav-link">Gestionar pagos</a>
+            {% else -%}
+            <a href="{{ url_for('book')}}" class="navigation-item w-nav-link">Agendar cita cliente</a>
+            {% endif %}
+            {% endif %}
+          </nav>
+          <div class="menu-button w-nav-button">
+            <img src="https://uploads-ssl.webflow.com/638e6d959fffbffb5a9ae14a/638e6d969fffbf09189ae170_menu-icon.png" width="22" alt="" class="menu-icon"/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% with messages = get_flashed_messages() %}
 {% if messages %}
 <ul>
     {% for message in messages %}
@@ -18,10 +60,64 @@
 {% endif %}
 {% endwith %}
 
-{% block content %}{% endblock %}<div class="section cc-contact"><div class="container"><div class="contact"><div class="contact-headline"><h3>¿Tienes dudas? ¡Mándanos un correo!</h3><p class="paragraph-light">Te responderemos cualquier pregunta.</p></div><div class="contact-form-wrap"><div class="w-form"><form id="wf-form-Email-Form" name="wf-form-Email-Form" data-name="Email Form" method="get" class="contact-form"><div class="w-layout-grid contact-form-grid"><div id="w-node-d783a17e-0b35-a13a-0448-a852d0df4a32-d0df4a24"><label for="Name-3">Name</label><input type="text" class="text-field w-input" maxlength="256" name="Name" data-name="Name" placeholder="Enter your name" id="Name"/></div><div id="w-node-d783a17e-0b35-a13a-0448-a852d0df4a36-d0df4a24"><label for="Email-3">Email Address</label><input type="email" class="text-field w-input" maxlength="256" name="Email" data-name="Email" placeholder="Enter your email" id="Email" required=""/></div><div id="w-node-d783a17e-0b35-a13a-0448-a852d0df4a3a-d0df4a24"><label for="Message">Form Label</label><textarea id="Message" name="Message" placeholder="Enter your message" maxlength="5000" data-name="Message" class="text-field cc-textarea w-input"></textarea></div></div><input type="submit" value="Submit" data-wait="Please wait..." class="button w-button"/></form><div class="status-message cc-success-message w-form-done"><div>Thank you! Your submission has been received!</div></div><div class="status-message cc-error-message w-form-fail"><div>Oops! Something went wrong while submitting the form.</div></div></div></div></div></div></div><div class="footer-wrap"><div><a target="_blank" ><div class="paragraph-tiny">Borel-Gauss</div></a></div><div class="footer-links"><a href="https://www.facebook.com/webflow/" target="_blank" class="footer-item">Facebook</a><a href="https://twitter.com/webflow" target="_blank" class="footer-item">Twitter</a><a href="https://www.instagram.com/webflowapp/" target="_blank" class="footer-item">Instagram</a></div></div><script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=638e6d959fffbffb5a9ae14a" type="text/javascript" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script><!--[if lte IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif]--><hr>
-</body></html>
-
-
+{% block content %}{% endblock %}
 
     {{ moment.include_moment() }}
-    {{ moment.lang(g.locale) }}
+
+<div class="section cc-contact">
+  <div class="container">
+    <div class="contact">
+      <div class="contact-headline">
+        <h3>¿Tienes dudas? ¡Mándanos un correo!</h3>
+        <p class="paragraph-light">Te responderemos cualquier pregunta.</p>
+      </div>
+      <div class="contact-form-wrap">
+        <div class="w-form">
+          <form id="wf-form-Email-Form" name="wf-form-Email-Form" data-name="Email Form" method="get" class="contact-form">
+            <div class="w-layout-grid contact-form-grid">
+              <div id="w-node-d783a17e-0b35-a13a-0448-a852d0df4a32-d0df4a24">
+                <label for="Name-3">Nombre</label>
+                <input type="text" class="text-field w-input" maxlength="256" name="Name" data-name="Name" placeholder="Enter your name" id="Name"/>
+              </div>
+              <div id="w-node-d783a17e-0b35-a13a-0448-a852d0df4a36-d0df4a24">
+                <label for="Email-3">E-mail</label>
+                <input type="email" class="text-field w-input" maxlength="256" name="Email" data-name="Email" placeholder="Enter your email" id="Email" required=""/>
+              </div>
+              <div id="w-node-d783a17e-0b35-a13a-0448-a852d0df4a3a-d0df4a24">
+                <label for="Message">Escribenos</label>
+                <textarea id="Message" name="Message" placeholder="Enter your message" maxlength="5000" data-name="Message" class="text-field cc-textarea w-input"></textarea>
+              </div>
+            </div>
+            <input type="submit" value="Submit" data-wait="Please wait..." class="button w-button"/>
+          </form>
+          <div class="status-message cc-success-message w-form-done">
+            <div>¡Gracias, tu mensaje ha sido enviado!
+            </div>
+          </div>
+          <div class="status-message cc-error-message w-form-fail">
+            <div>¡Oops! Algo salio mal al enviar tu mensaje.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-wrap">
+  <div>
+    <a target="_blank" >
+    <div class="paragraph-tiny">Borel-Gauss
+    </div></a>
+  </div>
+  <div class="footer-links">
+    <a href="https://www.facebook.com/webflow/" target="_blank" class="footer-item">Facebook</a>
+    <a href="https://twitter.com/webflow" target="_blank" class="footer-item">Twitter</a>
+    <a href="https://www.instagram.com/webflowapp/" target="_blank" class="footer-item">Instagram</a>
+  </div>
+</div>
+<script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=638e6d959fffbffb5a9ae14a" type="text/javascript" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous">
+</script>
+<!--[if lte IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif]-->
+<hr>
+</body>
+</html>
