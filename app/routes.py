@@ -75,7 +75,7 @@ def index():
         return redirect(url_for('index'))
     page = request.args.get('page', 1, type=int)
     posts = current_user.followed_posts().paginate(
-        page=page, per_page=current_app.config['POSTS_PER_PAGE'],
+        page=page, per_page=app.config['POSTS_PER_PAGE'],
         error_out=False)
     next_url = url_for('index', page=posts.next_num) \
         if posts.has_next else None
@@ -301,11 +301,11 @@ def agenda():
 @app.route('/agenda2',methods=['GET','POST'])
 @login_required
 #@check_role([ 'dr' ])
-def agenda2():    g.locale = str(get_locale())
+def agenda2():
+    g.locale = str(get_locale())
     form=BookmeetingFormDr()
     rol=UserInRole.query.filter_by(user_id=current_user.id).first().role_id
     if method == ['POST']: #form.validate_on_submit():
-
         # check time collision
         meetingcollisions=Meeting.query.filter_by(date=datetime.combine(form.date.data,datetime.min.time())).filter_by(roomId=form.rooms.data).all()
         print(len(meetingcollisions))
@@ -327,19 +327,13 @@ def agenda2():    g.locale = str(get_locale())
             costo=form.precio_nuevo.data
             return costo
         # make booking
-
         meeting=Meeting(title=form.title.data,roomId=room.id,doctorId=doctor.id,servicioId=servicio.id,pacienteId=paciente.id,bookerId=booker.id,date=form.date.data,startTime=form.startTime.data,endTime=endTime, costo=costo)
         db.session.add(meeting)
-
             # Add booking log
             #log=CostLog(title=form.title.data,date=form.date.data,cost=cost*form.duration.data)
             #db.session.add(log)
-
             # Add participants records
-
-
         db.session.commit()
-
         flash('Cita agendada correctamente')
         return redirect(url_for('index'))
     return render_template('agenda.html',title='Agendar Cita', form=form, rol=rol)
@@ -451,19 +445,14 @@ def pagos():
     if not current_user.is_authenticated:
         flash('Es necesario iniciar sesion para cancelar citas')
         return redirect(url_for('login'))
-
     form=PagosForm()
     if form.validate_on_submit():
         meeting=Meeting.query.filter_by(id=form.ids.data).first()
-
-
-
     g.locale = str(get_locale())
-        pagos=meeting.estatuspago='Pagado'
-        db.session.commit()
-
-        flash(f'Cita {meeting.servicio} registrada como Pagada ')
-        return redirect(url_for('index'))
+    pagos=meeting.estatuspago='Pagado'
+    db.session.commit()
+    flash(f'Cita {meeting.servicio} registrada como Pagada ')
+    return redirect(url_for('index'))
     return render_template('pagos.html',title='Pagos citas',form=form, rol=rol)
 
 
@@ -479,7 +468,7 @@ def add_numbers():
 
 @app.route('/probardoctores',methods=['GET','POST'])
 @login_required
-def probdoctores():    g.locale = str(get_locale())
-
+def probdoctores():
+    g.locale = str(get_locale())
     doctores=Doctor.query.filter_by(id=form.doctores.data).first()
     print(doctores)
