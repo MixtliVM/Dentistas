@@ -356,7 +356,7 @@ def agenda2():
 #ajustar tabla uwu
 @app.route('/miscitas')
 def miscitas():
-
+    rol=UserInRole.query.filter_by(user_id=current_user.id).first().role_id
     meetings=Meeting.query.filter_by(doctorId=current_user.id).order_by(Meeting.date).all()
     meetingreturns=[]
     for meeting in meetings:
@@ -378,13 +378,14 @@ def miscitas():
         meetingreturns.append(meetingreturn)
 
 
-    return render_template('miscitas.html',meetings=meetingreturns)
+    return render_template('miscitas.html',meetings=meetingreturns, rol=rol)
 
 
 @app.route('/cancelaciones',methods=['GET','POST'])
 @login_required
 #@check_role('[dr]')
 def cancelaciones():
+    rol=UserInRole.query.filter_by(user_id=current_user.id).first().role_id
     if not current_user.is_authenticated:
         flash('Es necesario iniciar sesion para cancelar citas')
         return redirect(url_for('login'))
@@ -403,13 +404,14 @@ def cancelaciones():
 
         flash(f'Cita {meeting.servicio} cancelada correctamente! ')
         return redirect(url_for('index'))
-    return render_template('cancelaciones.html',title='Cancelar cita',form=form)
+    return render_template('cancelaciones.html',title='Cancelar cita',form=form, rol=rol)
 
 
 @app.route('/editar',methods=['GET','POST'])
 @login_required
 #@check_role('[dr]')
 def editar():
+    rol=UserInRole.query.filter_by(user_id=current_user.id).first().role_id
     if not current_user.is_authenticated:
         flash('Es necesario iniciar sesion para editar citas')
         return redirect(url_for('login'))
@@ -433,7 +435,7 @@ def editar():
         db.session.commit()
         flash(f'Cita {meeting.servicio} con {User.query.filter_by(id=idpaciente).first()} Modificada correctamente! ')
         return redirect(url_for('index'))
-    return render_template('editar.html',title='Modificar cita',form=form)
+    return render_template('editar.html',title='Modificar cita',form=form, rol=rol)
 
 
 
@@ -465,10 +467,3 @@ def add_numbers():
     costo=servicio.servicioCosto
 
     return jsonify(result=costo )
-
-@app.route('/probardoctores',methods=['GET','POST'])
-@login_required
-def probdoctores():
-    g.locale = str(get_locale())
-    doctores=Doctor.query.filter_by(id=form.doctores.data).first()
-    print(doctores)

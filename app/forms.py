@@ -124,7 +124,7 @@ class BookmeetingForm(FlaskForm):
     rooms=SelectField('Seleccione',coerce=int,choices=RoomChoiceIterable())
     doctores=SelectField('Seleccione dentista',coerce=int,choices=DoctorChoiceIterable())
 
-    date=DateField("Fecha", validators=([InputRequired(), DataRequired()]))
+    date=DateField("Fecha", validators=([InputRequired(), DataRequired()]),format="%Y-%m-%d")
     startTime=SelectField('Elige la hora de inicio (en formato de 24 hrs)',coerce=int,choices=[(i,i) for i in range(9,19)])
     #duration=SelectField('Choose duration of the meeting(in hours)',coerce=int,choices=[(i,i) for i in range(1,6)])
     participants_user=current_user
@@ -136,9 +136,9 @@ class BookmeetingForm(FlaskForm):
         if meeting is not None: # username exist
             raise ValidationError('Por favor utiliza un titulo de cita distinto.')
 
-    def validate_date(self,date):
-        if self.date.data<datetime.datetime.now().date():
-            raise ValidationError('Solo puede agendar a partir del dia de mañana.')
+    #def validate_date(self,date):
+        #if self.date.data<datetime.datetime.now().date():
+        #    raise ValidationError('Solo puede agendar a partir del dia de mañana.')
 
 
 class BookmeetingFormDr(FlaskForm):
