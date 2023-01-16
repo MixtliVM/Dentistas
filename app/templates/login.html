@@ -2,6 +2,8 @@
 
 {% block content %}
     <h1>Iniciar Sesion</h1>
+    <hr>
+    <div class="container">
     <form action="" method="post" novalidate>
     {{ form.hidden_tag() }}
     <p>
@@ -24,4 +26,6 @@
           <p>¿Nuevo usuario?<a href="{{ url_for('register') }}">¡Presiona aqui para registrarte!</a></p>
           <p>¿Olvidaste tu contraseña?<a href="{{ url_for('reset_password_request') }}">Presiona aqui para pedir una nueva.</a>
           </p>
+    </div>
+    <hr>
       {% endblock %}

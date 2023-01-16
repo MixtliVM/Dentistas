@@ -4,18 +4,17 @@
                     <img src="{{ post.author.avatar(70) }}" />
                 </a>
             </td>
+            <div class="container">
             <td>
                 {% set user_link %}
                 <a href="{{ url_for('user', username=post.author.username) }}">
                     {{ post.author.username }}
                 </a>
                 {% endset %}
-                %(username)s dijo el %(when)s,
-                    username=user_link, when=moment(post.timestamp).fromNow()) }}
+                dijo {{ moment(post.timestamp).fromNow() }}:
                 <br>
                 <span id="post{{ post.id }}">{{ post.body }}</span>
-
-                {% endif %}
             </td>
+            </div>
         </tr>
     </table>

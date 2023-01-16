@@ -2,6 +2,7 @@
 
 
 {% block content %}
+<div class="container">
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type=text/javascript>
     $(function() {
@@ -17,6 +18,7 @@
   </script>
 
     <h1>Agendar cita</h1>
+    <hr>
     <form method="post">
         {{ form.hidden_tag() }}
         {% for error in form.title.errors %}
@@ -63,4 +65,6 @@
         <p>{{ form.submit() }}</p>
     <input type=submit>
         </form>
+</div>
+<hr>
     {% endblock %}

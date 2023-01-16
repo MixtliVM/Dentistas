@@ -2,6 +2,8 @@
 
 {% block content %}
     <h1>Editar mi perfil</h1>
+    <hr>
+    <div class="container">
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <p>
@@ -48,4 +50,6 @@
         </p>
         <p>{{ form.submit() }}</p>
     </form>
+    </div>
+    <hr>
 {% endblock %}

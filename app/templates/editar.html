@@ -2,6 +2,8 @@
 
 {% block content %}
     <h1>Modificar citas</h1>
+    <hr>
+    <div class="container">
     <form action="" method="post">
         {{ form.hidden_tag() }}
         {% from "_formhelpers.html" import render_field %}
@@ -37,4 +39,6 @@
 
         <p>{{ form.submit() }}</p>
     </form>
+    </div>
+    <hr>
 {% endblock %}

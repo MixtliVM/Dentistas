@@ -2,6 +2,7 @@
 
 
 {% block content %}
+<div class="container">
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type=text/javascript>
     $(function() {
@@ -17,6 +18,7 @@
   </script>
 
     <h1>Agendar cita</h1>
+    <hr>
     <form action="" method="post">
         {{ form.hidden_tag() }}
         {% for error in form.title.errors %}
@@ -40,7 +42,7 @@
             </dl>
 
             <dl>
-                {{ render_field(form.doctores) }}
+                {{ render_field(form.doc<div class="container">tores) }}
             </dl>
 
                 {{ form.date.label}}
@@ -58,4 +60,6 @@
 
         <p>{{ form.submit() }}</p>
         </form>
+</div>
+<hr>
     {% endblock %}

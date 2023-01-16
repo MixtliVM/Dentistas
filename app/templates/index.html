@@ -1,9 +1,50 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="heading-jumbo">Hola {{ current_user.username }}, somos especialistas en el cuidado de tu salud bucal.</h1><img src="https://uploads-ssl.webflow.com/638e6d959fffbffb5a9ae14a/638e8e1c99a799e9301d0b62_img4.jpg" loading="lazy" srcset="https://uploads-ssl.webflow.com/638e6d959fffbffb5a9ae14a/638e8e1c99a799e9301d0b62_img4-p-500.jpg 500w, https://uploads-ssl.webflow.com/638e6d959fffbffb5a9ae14a/638e8e1c99a799e9301d0b62_img4-p-800.jpg 800w, https://uploads-ssl.webflow.com/638e6d959fffbffb5a9ae14a/638e8e1c99a799e9301d0b62_img4-p-1080.jpg 1080w" sizes="(max-width: 479px) 100vw, (max-width: 767px) 96vw, (max-width: 991px) 94vw, 95vw" alt=""/></div></div></div><div class="container"><div class="carrer-headline-wrap"><h2>¿Donde nos encontramos?</h2><p class="paragraph-light">Ciudad de Puebla, Puebla.</p></div><div class="w-layout-grid work-experience-grid"><div id="w-node-dff26f68-5731-3efa-d3dd-8f65c72d8fc9-9b9ae163" class="work-position-wrap"><div class="position-name-text">Pol</div><div class="paragraph-light cc-position-name">Actuario</div><div class="paragraph-tiny cc-paragraph-tiny-light">BUAP<br/></div></div><div id="w-node-dff26f68-5731-3efa-d3dd-8f65c72d8fd1-9b9ae163" class="work-position-wrap"><div class="position-name-text">Willy</div><div class="paragraph-light cc-position-name">Actuario</div><div class="paragraph-tiny cc-paragraph-tiny-light">BUAP<br/></div></div><div id="w-node-dff26f68-5731-3efa-d3dd-8f65c72d8fd9-9b9ae163" class="work-position-wrap"><div class="position-name-text">Lucy</div><div class="paragraph-light cc-position-name">Mat. Aplicada</div><div class="paragraph-tiny cc-paragraph-tiny-light">BUAP<br/></div></div><div id="w-node-dff26f68-5731-3efa-d3dd-8f65c72d8fe1-9b9ae163" class="work-position-wrap"><div class="position-name-text">Mixtli</div><div class="paragraph-light cc-position-name">Actuario</div><div class="paragraph-tiny cc-paragraph-tiny-light">BUAP<br/></div></div></div></div></div>
-
-
+<h1 class="heading-jumbo">Hola {{ current_user.username }}, somos especialistas en el cuidado de tu salud bucal.</h1>
+<img src="https://uploads-ssl.webflow.com/638e6d959fffbffb5a9ae14a/638e8e1c99a799e9301d0b62_img4.jpg" loading="lazy" srcset="https://uploads-ssl.webflow.com/638e6d959fffbffb5a9ae14a/638e8e1c99a799e9301d0b62_img4-p-500.jpg 500w, https://uploads-ssl.webflow.com/638e6d959fffbffb5a9ae14a/638e8e1c99a799e9301d0b62_img4-p-800.jpg 800w, https://uploads-ssl.webflow.com/638e6d959fffbffb5a9ae14a/638e8e1c99a799e9301d0b62_img4-p-1080.jpg 1080w" sizes="(max-width: 479px) 100vw, (max-width: 767px) 96vw, (max-width: 991px) 94vw, 95vw" alt=""/>
+<div class="container">
+  <div class="carrer-headline-wrap">
+    <h2>¿Donde nos encontramos?</h2>
+    <p class="paragraph-light">Ciudad de Puebla, Puebla.</p>
+  </div>
+  <div class="w-layout-grid work-experience-grid">
+    <div id="w-node-dff26f68-5731-3efa-d3dd-8f65c72d8fc9-9b9ae163" class="work-position-wrap">
+      <div class="position-name-text">Pol
+      </div>
+      <div class="paragraph-light cc-position-name">Actuario
+      </div>
+      <div class="paragraph-tiny cc-paragraph-tiny-light">BUAP<br/>
+      </div>
+    </div>
+    <div id="w-node-dff26f68-5731-3efa-d3dd-8f65c72d8fd1-9b9ae163" class="work-position-wrap">
+      <div class="position-name-text">Willy
+      </div>
+      <div class="paragraph-light cc-position-name">Actuario
+      </div>
+      <div class="paragraph-tiny cc-paragraph-tiny-light">BUAP<br/>
+      </div>
+    </div>
+    <div id="w-node-dff26f68-5731-3efa-d3dd-8f65c72d8fd9-9b9ae163" class="work-position-wrap">
+      <div class="position-name-text">Lucy
+      </div>
+      <div class="paragraph-light cc-position-name">Mat. Aplicada
+      </div>
+      <div class="paragraph-tiny cc-paragraph-tiny-light">BUAP<br/>
+      </div>
+    </div>
+    <div id="w-node-dff26f68-5731-3efa-d3dd-8f65c72d8fe1-9b9ae163" class="work-position-wrap">
+      <div class="position-name-text">Mixtli
+      </div>
+      <div class="paragraph-light cc-position-name">Actuario
+      </div>
+      <div class="paragraph-tiny cc-paragraph-tiny-light">BUAP<br/>
+      </div>
+    </div>
+  </div>
+</div>
+<hr>
+<div class="container">
     {% if form %}
     <form action="" method="post">
         {{form.hidden_tag() }}
@@ -34,4 +75,6 @@
             </li>
         </ul>
     </nav>
+</div>
+<hr>
 {% endblock %}

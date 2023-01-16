@@ -2,7 +2,9 @@
 
 {% block content %}
 <h1>Historial de citas:</h1>
-<table border="1" cellpadding=3>
+<hr>
+<div class="container">
+  <table border="1" cellpadding=3>
     <tr>
         <th>Servicio</th>
         <th>Paciente</th>
@@ -19,7 +21,7 @@
 
 
     </tr>
-{% for meeting in meetings %}
+    {% for meeting in meetings %}
     <tr>
 
         <td>{{ meeting.Servicio}}</td>
@@ -38,6 +40,8 @@
 
 
 
-{% endfor %}
-</table>
+    {% endfor %}
+  </table>
+</div>
+<hr>
 {% endblock %}
