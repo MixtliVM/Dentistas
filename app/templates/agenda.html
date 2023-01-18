@@ -15,7 +15,7 @@
       });
     });
   </script>
-
+ 
     <h1>Agendar cita</h1>
     <form method="post">
         {{ form.hidden_tag() }}
@@ -30,10 +30,10 @@
             <dl>
                 {{ render_field(form.pacientes) }}
                 {{ render_field(form.servicios) }}
-                 <h3><span id="result">Precio:</span></h3>
+                 <h3><span id="result"></span></h3>
                   <p>{{ form.edit_precio }}  Editar precio      </p>
 
-                  {{ form.precio_nuevo(class="switch", form='noteform') }}
+                  {{ form.precio_nuevo}}
 
 
             </dl>
