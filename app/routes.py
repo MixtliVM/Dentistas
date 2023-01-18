@@ -200,12 +200,14 @@ def agenda():
         room=Room.query.filter_by(id=form.rooms.data).first()
         doctor=User.query.filter_by(id=form.doctores.data).first()
         servicio=Servicio.query.filter_by(id=form.servicios.data).first()
-        booleano=form.edit_precio.data
-        costo=servicio.servicioCosto
-        if booleano==True:
-            costo=form.precio_nuevo.data
-            return costo
         endTime=form.startTime.data+1
+        booleano=form.edit_precio.data
+
+        if booleano == True:
+            costo=form.precio_nuevo.data
+        else:
+            costo=servicio.servicioCosto
+        print(costo)
         #paciente=User.query.filter_by(id=form.pacientes.data).first()
         #participants_user=current_user
 
@@ -219,6 +221,7 @@ def agenda():
         # Add participants records
         db.session.commit()
         flash('Cita agendada correctamente')
+
         return redirect(url_for('index'))
     return render_template('agenda.html',title='Angendar una cita',form=form, rol=rol)
 
@@ -403,9 +406,12 @@ def add_numbers():
 
     return jsonify(result=costo )
 
-@app.route('/probardoctores',methods=['GET','POST'])
-@login_required
-def probdoctores():
+@app.route('/_costo_nuevo')
+def costo_nuevo():
+    form=BookmeetingFormDr
+    a = request.args.get('a', 0)
+    if a := True:
+        costo=precio_nuevo
 
-    doctores=Doctor.query.filter_by(id=form.doctores.data).first()
-    print(doctores)
+
+    return jsonify(result=costo )
