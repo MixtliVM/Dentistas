@@ -470,16 +470,3 @@ def add_numbers():
     costo=servicio.servicioCosto
 
     return jsonify(result=costo )
-<<<<<<< HEAD
-=======
-
-@app.route('/_costo_nuevo')
-def costo_nuevo():
-    form=BookmeetingFormDr
-    a = request.args.get('a', 0)
-    if a := True:
-        costo=precio_nuevo
-
-
-    return jsonify(result=costo )
->>>>>>> origin/Backend

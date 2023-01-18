@@ -16,7 +16,7 @@
       });
     });
   </script>
- 
+
     <h1>Agendar cita</h1>
     <hr>
     <form method="post">
@@ -49,7 +49,7 @@
             </dl>
 
                 {{ form.date.label}}
-                {{ form.date(class="dtpick") }}
+                {{ form.date(type="date") }}
                 {% for error in form.date.errors %}
                 <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
