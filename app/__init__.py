@@ -6,7 +6,7 @@ from flask_login import LoginManager, UserMixin, login_required, current_user
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
-from flask_mail import Mail
+from flask_mail import Mail, Message
 from flask_moment import Moment
 
 
