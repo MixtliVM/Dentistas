@@ -11,7 +11,7 @@ from datetime import datetime, date
 from app.forms import LoginForm, RegistrationForm, EmptyForm, BookmeetingForm, BookmeetingFormDr, CancelacionForm, EditarForm, PagosForm, \
     ResetPasswordRequestForm, ResetPasswordForm
 from app.models import *
-from app.email2 import send_password_reset_email
+from app.email import send_password_reset_email
 
 
 @app.before_request
